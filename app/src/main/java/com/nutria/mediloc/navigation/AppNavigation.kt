@@ -27,8 +27,11 @@ fun AppNavigation (){
         composable(route = AppScreens.Camera.route){
             Camera(navController)
         }
-        composable(route = AppScreens.Results.route){
-            Results(navController)
+        composable(route = AppScreens.Results.route +"/{content}",
+            arguments = listOf(navArgument(name = "content") {
+                type = NavType.StringType
+            })){
+            Results(navController, it.arguments?.getString("content"))
         }
     }
 }

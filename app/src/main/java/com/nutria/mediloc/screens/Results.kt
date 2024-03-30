@@ -30,8 +30,15 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.nutria.mediloc.navigation.AppScreens
 
+
+val actionColor = Color(0xFF00b572)
+val secondaryColor = Color(0xFFA8EAA7)
+val textInButton = Color.Black
+val textoBanner = 24.sp
+val texto = 18.sp
+
 @Composable
-fun Results (navController: NavController){
+fun Results (navController: NavController, contenidoReceta:String?){
     MaterialTheme {
         val json = """
         {
@@ -79,8 +86,15 @@ fun Results (navController: NavController){
           ]
         }
     """.trimIndent()
-        val medicamentos: List<Medicamento> = jsonAMedicamentos(json)
-        ResultsList(medicamentos = medicamentos, navController)
+        if (contenidoReceta == "No se pudieron encontrar medicamentos"){
+            NoMed(navController = navController)
+        } else {
+            val medicamentos: List<Medicamento> = jsonAMedicamentos(json)
+            val content = contenidoReceta ?: "Contenido predeterminado"
+            Text(text = content)
+            //Provisional en lo que queda el web scrapping
+        // ResultsList(medicamentos = medicamentos, navController)
+        }
     }
 }
 
@@ -106,10 +120,76 @@ fun jsonAMedicamentos(json: String): List<Medicamento> {
 }
 
 @Composable
+fun NoMed(navController: NavController){
+    val context = LocalContext.current
+    var nombre by remember { mutableStateOf("") }
+
+    LaunchedEffect(key1 = context) {
+        val sharedPreferences = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        nombre = sharedPreferences.getString("nombre", "") ?: ""
+
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp) // Altura del banner
+            .background(color = secondaryColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "No se pudieron encontrar medicamentos",
+            style = TextStyle(
+                fontSize = textoBanner,
+                fontWeight = FontWeight.Bold
+            ),
+        )
+    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Porfavor intente tomando la foto mas cerca.\n - Procure que la foto se vea clara",
+            modifier = Modifier.padding(top = 100.dp),
+            style = TextStyle(
+                fontSize = texto,
+                fontWeight = FontWeight.Bold)
+        )
+        Button(
+            onClick = {
+                navController.navigate(AppScreens.Serach.route + "/" + nombre)
+            },
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(top = 100.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = actionColor
+            ),
+            shape = RoundedCornerShape(16.dp),
+
+            ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(1.dp),
+                tint = Color.Black
+            )
+            Text(
+                text = "Volver al inicio",
+                style = TextStyle(
+                    fontSize = textoBanner,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = textInButton
+            )
+        }
+    }
+}
+
+@Composable
 fun ResultsList(medicamentos: List<Medicamento>, navController: NavController) {
     var indice by remember { mutableStateOf(0) }
-    val actionColor = Color(0xFF00b572)
-    val secondaryColor = Color(0xFFA8EAA7)
 
     val context = LocalContext.current
     var nombre by remember { mutableStateOf("") }
@@ -133,29 +213,12 @@ fun ResultsList(medicamentos: List<Medicamento>, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
-                onClick = {
-                    navController.navigate(AppScreens.Serach.route + "/" + nombre)
-                    },
-                modifier = Modifier.size(width = 110.dp, height = 50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = actionColor
-                ),
-                shape = RoundedCornerShape(16.dp),
-
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = null,
-                )
-                Text("Inicio")
-            }
             Text(
                 text = " Medicamentos Encontrados",
                 style = TextStyle(
-                    fontSize = 24.sp,
+                    fontSize = textoBanner,
                     fontWeight = FontWeight.Bold
-                )
+                ),
             )
         }
 
@@ -164,7 +227,9 @@ fun ResultsList(medicamentos: List<Medicamento>, navController: NavController) {
             indi = indice,
             fullList = medicamentos,
             onAnterior = { indice = (indice - 1).coerceAtLeast(0) },
-            onSiguiente = { indice = (indice + 1).coerceAtMost(medicamentos.size - 1) }
+            onSiguiente = { indice = (indice + 1).coerceAtMost(medicamentos.size - 1) },
+            navController,
+            nombre
         )
     }
 }
@@ -175,10 +240,10 @@ fun PantallaMedicamento(
     indi: Int,
     fullList: List<Medicamento>,
     onAnterior: () -> Unit,
-    onSiguiente: () -> Unit
+    onSiguiente: () -> Unit,
+    navController: NavController,
+    nombre: String
 ) {
-    val actionColor = Color(0xFF00b572)
-    val secondaryColor = Color(0xFFA8EAA7)
 
     Column(
         modifier = Modifier
@@ -189,15 +254,15 @@ fun PantallaMedicamento(
         Text(
             text = "Medicamento: ${medicamento.nombre}",
             fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
+            fontSize = textoBanner,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Spacer(modifier = Modifier.height(8.dp))
         medicamento.presentaciones.forEachIndexed { index, presentacion ->
             Column {
-                Text(text = "Precio: ${presentacion.precio}", fontWeight = FontWeight.Bold)
-                Text(text = "Cantidad: ${presentacion.cantidad}")
-                Text(text = "Farmacia: ${presentacion.farmacia}")
+                Text(text = "Precio: ${presentacion.precio}", fontWeight = FontWeight.Bold, fontSize = texto)
+                Text(text = "Cantidad: ${presentacion.cantidad}", fontSize = texto)
+                Text(text = "Farmacia: ${presentacion.farmacia}", fontSize = texto)
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider(color = secondaryColor, thickness = 2.dp)
             }
@@ -213,7 +278,8 @@ fun PantallaMedicamento(
                 modifier = Modifier.size(width = 150.dp, height = 80.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
-                Text("Anterior medicamento")
+                Text(text = "Anterior medicamento",
+                    color = textInButton)
             }
             Button(
                 onClick = onSiguiente,
@@ -222,8 +288,37 @@ fun PantallaMedicamento(
                 modifier = Modifier.size(width = 150.dp, height = 80.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
-                Text("Siguiente medicamento")
+                Text(text = "Siguiente medicamento",
+                    color = textInButton)
             }
+        }
+        Spacer(modifier = Modifier.height(50.dp))
+        Button(
+            onClick = {
+                navController.navigate(AppScreens.Serach.route + "/" + nombre)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = actionColor
+            ),
+            shape = RoundedCornerShape(16.dp),
+
+            ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(1.dp),
+                tint = Color.Black
+            )
+            Text(
+                text = "Buscar otros medicamentos",
+                style = TextStyle(
+                    fontSize = textoBanner,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = textInButton
+            )
         }
     }
 }
@@ -233,5 +328,6 @@ fun PantallaMedicamento(
 @Composable
 fun DefaultPreviewMain (){
     val navController = rememberNavController()
-    Results(navController)
+    val conten = "No se pudieron encontrar medicamentos"
+    Results(navController, conten)
 }

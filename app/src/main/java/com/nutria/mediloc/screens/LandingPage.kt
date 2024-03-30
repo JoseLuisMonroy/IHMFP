@@ -57,7 +57,7 @@ fun BodyContentLanding (navController: NavController, name: String?) {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             ),
-            modifier = Modifier.align(Alignment.Center), onTextLayout = {}
+            modifier = Modifier.align(Alignment.Center)
         )
     }
     Column(
