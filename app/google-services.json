@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "827682226516",
+    "project_id": "recetasmediloc",
+    "storage_bucket": "recetasmediloc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827682226516:android:8705d1f6f4d14985bac8c1",
+        "android_client_info": {
+          "package_name": "com.nutria.mediloc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "Here_Your_api_key"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProcessor
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
@@ -39,7 +38,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import androidx.privacysandbox.tools.core.model.Method
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -53,8 +51,6 @@ import java.util.UUID
 import java.util.concurrent.Executor
 import android.widget.Toast
 import com.android.volley.DefaultRetryPolicy
-import com.android.volley.Response
-import java.util.*
 import com.android.volley.Request
 import com.nutria.mediloc.navigation.AppScreens
 
